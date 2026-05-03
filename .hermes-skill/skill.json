@@ -1,0 +1,64 @@
+{
+  "name": "pdf-toolkit-pro",
+  "version": "1.0.0",
+  "description": "PDF manipulation toolkit - split, merge, compress, rotate, convert PDFs to JPG/Text. Client-side processing with privacy-first approach.",
+  "author": "Luckycat133",
+  "homepage": "https://github.com/Luckycat133/PDF-Toolkit-Pro",
+  "tags": [
+    "pdf",
+    "split",
+    "merge",
+    "compress",
+    "rotate",
+    "convert",
+    "pdf-to-jpg",
+    "pdf-to-text",
+    "document-tools",
+    "pdf-toolkit"
+  ],
+  "capabilities": {
+    "split_pdf": {
+      "description": "Split PDF by visual clicks or page ranges",
+      "methods": ["visual_split", "range_split"],
+      "output": "zip_with_split_pdfs"
+    },
+    "merge_pdf": {
+      "description": "Merge multiple PDF files into one",
+      "methods": ["drag_drop_merge"],
+      "output": "single_pdf"
+    },
+    "compress_pdf": {
+      "description": "Reduce PDF file size using basic compression",
+      "methods": ["optimize_streams"],
+      "output": "compressed_pdf"
+    },
+    "rotate_pdf": {
+      "description": "Rotate individual or all pages by 90/180/270 degrees",
+      "methods": ["page_rotation"],
+      "output": "rotated_pdf"
+    },
+    "convert_pdf_to_jpg": {
+      "description": "Convert PDF pages to high-quality JPG images",
+      "methods": ["canvas_render"],
+      "output": "zip_with_jpg_images"
+    },
+    "convert_pdf_to_text": {
+      "description": "Extract text content from PDF documents",
+      "methods": ["text_content_extraction"],
+      "output": "plain_text"
+    }
+  },
+  "technologies": {
+    "frontend": ["React", "TypeScript", "Tailwind CSS"],
+    "pdf_processing": ["pdf-lib", "pdf.js"],
+    "compression": ["JSZip"]
+  },
+  "privacy": {
+    "type": "client_side_only",
+    "description": "All PDF processing happens in-browser - files never leave the user's device"
+  },
+  "file_formats": {
+    "input": ["pdf"],
+    "output": ["pdf", "jpg", "zip", "txt"]
+  }
+}

@@ -81,7 +81,6 @@ export async function splitPdfAndZip(file: File, splitPoints: number[], fileName
     const pdfDoc = await PDFDocument.load(arrayBuffer);
     const zip = new JSZip();
 
-    let startPage = 0;
     const sortedPoints = [...splitPoints].sort((a, b) => a - b);
 
     const totalFiles = sortedPoints.length + 1;
@@ -93,15 +92,15 @@ export async function splitPdfAndZip(file: File, splitPoints: number[], fileName
         ranges.push({ start: lastPoint, end: point });
         lastPoint = point;
     });
-    ranges.push({ start: lastPoint, end: pdfDoc.getPageCount() });
+    ranges.push({ start: lastPoint, end: pdfDoc.getPagesCount() });
 
     for (const range of ranges) {
         if (range.start >= range.end) continue;
 
         const newDoc = await PDFDocument.create();
         const pagesToCopy = Array.from({ length: range.end - range.start }, (_, k) => range.start + k);
-        const copiedPages = await newDoc.copyPages(pdfDoc, pagesToCopy);
-        copiedPages.forEach(page => newDoc.addPage(page));
+        const copiedPages = await (newDoc as any).copyPages(pdfDoc, pagesToCopy);
+        copiedPages.forEach((page: any) => (newDoc as any).addPage(page));
 
         const newPdfBytes = await newDoc.save();
         const fileName = fileNames[fileIndex]?.trim() || `part-${fileIndex + 1}.pdf`;
@@ -134,13 +133,13 @@ export async function splitPdfByRangesAndZip(file: File, ranges: {start: number,
         // Ranges are 1-based, inclusive. PDF-lib uses 0-based indices.
         const pagesToCopy = Array.from({ length: range.end - range.start + 1 }, (_, k) => range.start - 1 + k);
         
-        if (pagesToCopy.some(p => p < 0 || p >= pdfDoc.getPageCount())) {
+        if (pagesToCopy.some(p => p < 0 || p >= pdfDoc.getPagesCount())) {
             throw new Error(`Invalid page range specified: ${range.start}-${range.end}`);
         }
 
         const newDoc = await PDFDocument.create();
-        const copiedPages = await newDoc.copyPages(pdfDoc, pagesToCopy);
-        copiedPages.forEach(page => newDoc.addPage(page));
+        const copiedPages = await (newDoc as any).copyPages(pdfDoc, pagesToCopy);
+        copiedPages.forEach((page: any) => (newDoc as any).addPage(page));
 
         const newPdfBytes = await newDoc.save();
         
@@ -175,8 +174,10 @@ export async function mergePdfs(files: File[], outputFilename: string, onProgres
         const file = files[i];
         const arrayBuffer = await fileToArrayBuffer(file);
         const pdfDoc = await PDFDocument.load(arrayBuffer);
-        const copiedPages = await mergedPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
-        copiedPages.forEach(page => mergedPdf.addPage(page));
+        const totalPages = pdfDoc.getPagesCount();
+        const pageIndices = Array.from({ length: totalPages }, (_, k) => k);
+        const copiedPages = await (mergedPdf as any).copyPages(pdfDoc, pageIndices);
+        copiedPages.forEach((page: any) => (mergedPdf as any).addPage(page));
 
         if (onProgress) {
             const progress = Math.round(((i + 1) / totalFiles) * 90);
@@ -208,15 +209,20 @@ export async function rotatePdf(file: File, rotations: { [page: number]: number 
     const arrayBuffer = await fileToArrayBuffer(file);
     onProgress?.(30);
     const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const totalPages = pdfDoc.getPageCount();
+    const totalPages = pdfDoc.getPagesCount();
     
     const pages = pdfDoc.getPages();
     for (let i = 0; i < totalPages; i++) {
         const pageNumber = i + 1;
         if (rotations[pageNumber]) {
             const page = pages[i];
-            const currentRotation = page.getRotation().angle;
-            page.setRotation(degrees(currentRotation + rotations[pageNumber]));
+            const currentRotation = page.getRotation() as any;
+            // Rotation is {angle: number, type?: 'degrees' | 'radians'}.
+            // Convert to degrees if needed.
+            const currentAngle = currentRotation.type === 'radians'
+                ? (currentRotation.angle * 180) / Math.PI
+                : currentRotation.angle;
+            page.setRotation(degrees(currentAngle + rotations[pageNumber]) as any);
         }
     }
     onProgress?.(90);

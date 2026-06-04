@@ -31,3 +31,11 @@ coverage/
 # Temporary
 .tmp/
 .temp/
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.pyc
+*.pyo

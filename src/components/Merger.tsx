@@ -93,15 +93,15 @@ const Merger: React.FC = () => {
         }
     };
     
-    const handleDragStart = (e: DragEvent<HTMLDivElement>, position: number) => {
+    const handleDragStart = (_e: DragEvent<HTMLDivElement>, position: number) => {
         dragItem.current = position;
     };
-    
-    const handleDragEnter = (e: DragEvent<HTMLDivElement>, position: number) => {
+
+    const handleDragEnter = (_e: DragEvent<HTMLDivElement>, position: number) => {
         dragOverItem.current = position;
     };
-    
-    const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+
+    const handleDrop = (_e: DragEvent<HTMLDivElement>) => {
         if (dragItem.current === null || dragOverItem.current === null || dragItem.current === dragOverItem.current) return;
 
         const newFiles = [...files];

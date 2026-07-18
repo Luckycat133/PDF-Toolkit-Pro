@@ -2,9 +2,10 @@ import { PDFDocument, degrees } from 'pdf-lib';
 import JSZip from 'jszip';
 import download from 'downloadjs';
 import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 // Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 const fileToArrayBuffer = (file: File): Promise<ArrayBuffer> => {
     return new Promise((resolve, reject) => {
@@ -92,7 +93,7 @@ export async function splitPdfAndZip(file: File, splitPoints: number[], fileName
         ranges.push({ start: lastPoint, end: point });
         lastPoint = point;
     });
-    ranges.push({ start: lastPoint, end: pdfDoc.getPagesCount() });
+    ranges.push({ start: lastPoint, end: pdfDoc.getPageCount() });
 
     for (const range of ranges) {
         if (range.start >= range.end) continue;
@@ -133,7 +134,7 @@ export async function splitPdfByRangesAndZip(file: File, ranges: {start: number,
         // Ranges are 1-based, inclusive. PDF-lib uses 0-based indices.
         const pagesToCopy = Array.from({ length: range.end - range.start + 1 }, (_, k) => range.start - 1 + k);
         
-        if (pagesToCopy.some(p => p < 0 || p >= pdfDoc.getPagesCount())) {
+        if (pagesToCopy.some(p => p < 0 || p >= pdfDoc.getPageCount())) {
             throw new Error(`Invalid page range specified: ${range.start}-${range.end}`);
         }
 
@@ -174,7 +175,7 @@ export async function mergePdfs(files: File[], outputFilename: string, onProgres
         const file = files[i];
         const arrayBuffer = await fileToArrayBuffer(file);
         const pdfDoc = await PDFDocument.load(arrayBuffer);
-        const totalPages = pdfDoc.getPagesCount();
+        const totalPages = pdfDoc.getPageCount();
         const pageIndices = Array.from({ length: totalPages }, (_, k) => k);
         const copiedPages = await (mergedPdf as any).copyPages(pdfDoc, pageIndices);
         copiedPages.forEach((page: any) => (mergedPdf as any).addPage(page));
@@ -209,7 +210,7 @@ export async function rotatePdf(file: File, rotations: { [page: number]: number 
     const arrayBuffer = await fileToArrayBuffer(file);
     onProgress?.(30);
     const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const totalPages = pdfDoc.getPagesCount();
+    const totalPages = pdfDoc.getPageCount();
     
     const pages = pdfDoc.getPages();
     for (let i = 0; i < totalPages; i++) {

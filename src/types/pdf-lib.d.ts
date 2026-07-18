@@ -19,14 +19,14 @@ declare module 'pdf-lib' {
 
   export class PDFDocument {
     static load(data: Uint8Array | ArrayBuffer, options?: PDFDocumentOptions): Promise<PDFDocument>;
-    static create(options?: PDFDocumentOptions): PDFDocument;
+    static create(options?: PDFDocumentOptions): Promise<PDFDocument>;
 
     getPage(index: number): PDFPage;
     getPages(): PDFPage[];
-    addPage(): PDFPage;
+    addPage(size?: [number, number]): PDFPage;
     removePage(index: number): void;
     insertPage(index: number, page: PDFPage): void;
-    getPagesCount(): number;
+    getPageCount(): number;
 
     save(options?: SaveOptions): Promise<Uint8Array>;
     saveBase64(): string;
@@ -40,7 +40,7 @@ declare module 'pdf-lib' {
     setCreationDate(date: Date): void;
     setModificationDate(date: Date): void;
 
-    copyPages(source: PDFDocument, pageIndices: number[]): PDFPage[];
+    copyPages(source: PDFDocument, pageIndices: number[]): Promise<PDFPage[]>;
     register(encoder: unknown): void;
   }
 

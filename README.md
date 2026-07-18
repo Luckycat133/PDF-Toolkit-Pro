@@ -42,7 +42,7 @@ npm test
 npm run build
 ```
 
-The GitHub Pages workflow runs tests and a production build before deployment.
+A read-only CI workflow runs tests and a production build on pull requests; the GitHub Pages workflow repeats those checks before deployment.
 
 ## Current test scope
 

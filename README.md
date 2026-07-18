@@ -1,6 +1,7 @@
 # PDF Toolkit Pro
 
-> **Status: Active — Public browser utility**
+> **Status: Active — Public browser utility**  
+> Build/privacy baseline last verified: 2026-07-18
 
 Live site: **https://luckycat133.github.io/PDF-Toolkit-Pro/**
 

@@ -9,7 +9,7 @@ async function samplePdf(): Promise<File> {
   const document = await PDFDocument.create();
   document.addPage([200, 300]);
   const bytes = await document.save();
-  return new File([bytes], 'sample.pdf', { type: 'application/pdf' });
+  return new File([bytes as BlobPart], 'sample.pdf', { type: 'application/pdf' });
 }
 
 describe('client-side PDF transformations', () => {

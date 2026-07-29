@@ -29,7 +29,7 @@ async function getPdfJsDoc(file: File, onProgress?: (progress: number) => void) 
         return pdfDocCache.get(fileKey);
     }
     const arrayBuffer = await fileToArrayBuffer(file);
-    const loadingTask = pdfjsLib.getDocument(arrayBuffer);
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
     
     if (onProgress) {
         loadingTask.onProgress = (data: { loaded: number, total: number }) => {

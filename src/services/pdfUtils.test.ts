@@ -4,6 +4,10 @@ import { PDFDocument } from 'pdf-lib';
 import { compressPdf, rotatePdf } from './pdfUtils';
 
 vi.mock('downloadjs', () => ({ default: vi.fn() }));
+vi.mock('pdfjs-dist', () => ({
+  GlobalWorkerOptions: { workerSrc: '' },
+  getDocument: vi.fn(),
+}));
 
 async function samplePdf(): Promise<File> {
   const document = await PDFDocument.create();
